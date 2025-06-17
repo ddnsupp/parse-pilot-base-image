@@ -2,7 +2,6 @@
 ![Python Version](https://img.shields.io/badge/python-3.13-blue.svg)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-blue.svg)](LICENSE)
 [![Docker Pulls](https://img.shields.io/docker/pulls/deadness/parse-pilot-base-image.svg)](https://hub.docker.com/r/deadness/parse-pilot-base-image)
-[![Docker Image Size](https://img.shields.io/docker/image-size/deadness/parse-pilot-base-image/latest.svg)](https://hub.docker.com/r/deadness/parse-pilot-base-image)
 [![Docker Version](https://img.shields.io/docker/v/deadness/parse-pilot-base-image/latest.svg)](https://hub.docker.com/r/deadness/parse-pilot-base-image)
 
 ParsePilot Base Image is a production-ready Docker base image tailored for building efficient web scrapers 
