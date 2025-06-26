@@ -1,51 +1,36 @@
-FROM python:3.13-slim
-
+FROM python:3.13-slim AS builder
+ENV PATH="/root/.local/bin:$PATH"
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y \
-        gcc \
-        build-essential \
-        libpq-dev \
-        postgresql-client \
-        curl \
-        dos2unix \
-        libffi-dev \
-        libssl-dev \
-        dnsutils \
-        netbase \
-        ca-certificates \
-        cron \
-        libnss3 \
-        libnss3-tools \
-        libglib2.0-0 \
-        libdbus-1-3 \
-        libatk1.0-0 \
-        libatk-bridge2.0-0 \
-        libcups2 \
-        libxkbcommon0 \
-        libatspi2.0-0 \
-        libxcomposite1 \
-        libxdamage1 \
-        libxext6 \
-        libxfixes3 \
-        libxrandr2 \
-        libgbm1 \
-        libpango-1.0-0 \
-        libcairo2 \
-        libasound2 \
-    && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    rm -f /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock && \
+    apt-get update && apt-get install --no-install-recommends -y \
+        gcc build-essential libffi-dev libssl-dev libpq-dev curl && \
+    rm -rf /var/lib/apt/lists/*
 
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
-ENV PATH="/root/.local/bin/:$PATH"
-
 COPY pyproject.toml uv.lock ./
-RUN uv pip install --system .
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
+    uv pip install --system .
 
 COPY . .
 
-RUN python3 -m playwright install chromium
+FROM python:3.13-slim
+ENV PATH="/root/.local/bin:/usr/local/bin:/usr/bin:/bin"
+WORKDIR /app
 
-ENV PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    rm -f /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock && \
+    apt-get update && apt-get install --no-install-recommends -y \
+        libpq5 postgresql-client curl dos2unix dnsutils netbase ca-certificates cron \
+        libnss3 libnss3-tools libglib2.0-0 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 \
+        libcups2 libxkbcommon0 libatspi2.0-0 libxcomposite1 libxdamage1 libxext6 \
+        libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /app /app
+
+RUN python -m playwright install --with-deps chromium
