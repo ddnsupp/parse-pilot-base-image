@@ -1,7 +1,7 @@
 [project]
-name = "natalielova-job-hunter"
+name = "parse_pilot_base_image"
 version = "0.1.0"
-description = "Add your description here"
+description = "parse_pilot_base_image"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -9,13 +9,16 @@ dependencies = [
     "aiogram>=3.20.0.post0",
     "alembic>=1.15.2",
     "asyncpg>=0.30.0",
+    "fastapi>=0.115.12",
     "json-log-formatter>=1.1.1",
     "openai>=1.78.1",
     "playwright>=1.52.0",
     "psycopg2-binary>=2.9.10",
     "psycopg[binary]>=3.2.8",
+    "pydantic-settings>=2.9.1",
     "pyrogram>=2.0.106",
     "python-dotenv>=1.1.0",
     "requests>=2.32.3",
     "sqlalchemy>=2.0.40",
+    "uvicorn>=0.34.3",
 ]
