@@ -13,7 +13,8 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
-    uv pip install --system .
+    uv pip install --system . && \
+    rm -rf /root/.cache/uv/*
 
 COPY . .
 
@@ -30,7 +31,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/local /usr/local
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /app /app
 
-RUN python -m playwright install --with-deps chromium
+RUN python -m playwright install chromium && \
+    rm -rf /root/.cache/ms-playwright /tmp/*
